@@ -18,3 +18,12 @@ div {
   outline-color: #000000;
   display: inline-block;
 }
+
+.food-tile {
+  background-color: #adff2f;
+  display: inline-block;
+  outline-style: solid;
+  outline-width: medium;
+  outline-color: #000000;
+  display: inline-block;
+}
