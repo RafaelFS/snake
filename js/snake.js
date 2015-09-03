@@ -1,8 +1,12 @@
+var mapTiles = [];
 var occupiedTiles = [];
+var foodTiles = [];
+var nextDirection = "";
 var currentDirection = "";
 var NUMBEROFROWS = 20;
 var NUMBEROFCOLLUMNS = 20;
 initialize();
+placeNewFood();
 setInterval(function () {
    update();
 }, 100);
@@ -10,18 +14,20 @@ setInterval(function () {
 function initialize() {
   createMap();
   var initialTile = {x:0, y:0};
-  occupiedTiles.push(initialTile);
   setTileAsOccupied(initialTile);
-  setDirection('RIGHT');
+  setTileAsOccupied({x:1, y:0});
+  setNextDirection('RIGHT');
   document.onkeydown = checkKey;
 }
 
 function createMap() {
   for (var i = 0; i < NUMBEROFROWS; i++) {
+    mapTiles[i] = [];
     for (var j = 0; j < NUMBEROFCOLLUMNS; j++) {
       var newDiv = document.createElement("div");
       newDiv.className = "clear-tile"
       newDiv.id = (j.toString() + ',' + i.toString());
+      mapTiles[i].push(newDiv);
       document.body.appendChild(newDiv);
     }
     var newBr = document.createElement("br");
@@ -29,24 +35,41 @@ function createMap() {
   }
 }
 
+function getDivForTile(tile){
+  return document.getElementById(tile.x.toString() + ',' + tile.y.toString());
+}
+
 function setTileAsOccupied(tile){
-  document.getElementById(tile.x.toString() + ',' + tile.y.toString()).className = "occupied-tile";
+  occupiedTiles.push(tile);
+  getDivForTile(tile).className = "occupied-tile";
 }
 
 function setTileAsClear(tile){
-  document.getElementById(tile.x.toString() + ',' + tile.y.toString()).className = "clear-tile";
+  getDivForTile(tile).className = "clear-tile";
 }
 
-function setDirection(direction){
-  currentDirection = direction;
+function setTileAsFood(tile){
+  getDivForTile(tile).className = "food-tile";
+}
+
+function setNextDirection(direction){
+  nextDirection = direction;
 }
 
 function update(){
+  currentDirection = nextDirection;
   var nextTile = getNextTile();
-  occupiedTiles.push(nextTile);
-  setTileAsOccupied(nextTile);
-  var tailTile = occupiedTiles.shift();
-  setTileAsClear(tailTile);
+  if(isPartOfSnake(nextTile)){
+    console.log('Game Over');
+  } else{
+    if(isFood(nextTile)){
+      placeNewFood();
+    } else {
+      var tailTile = occupiedTiles.shift();
+      setTileAsClear(tailTile);
+    }
+    setTileAsOccupied(nextTile);
+  }
 }
 
 function getNextTile(){
@@ -93,20 +116,38 @@ function checkKey(e) {
   switch (e.keyCode) {
        //Left
        case 37:
-           if(currentDirection != 'RIGHT') setDirection('LEFT');
+           if(currentDirection != 'RIGHT') setNextDirection('LEFT');
            break;
       //Up
        case 38:
-           if(currentDirection != 'DOWN') setDirection('UP');
+           if(currentDirection != 'DOWN') setNextDirection('UP');
            break;
       //Right
        case 39:
-           if(currentDirection != 'LEFT') setDirection('RIGHT');
+           if(currentDirection != 'LEFT') setNextDirection('RIGHT');
            break;
        //Down
        case 40:
-           if(currentDirection != 'UP') setDirection('DOWN');
+           if(currentDirection != 'UP') setNextDirection('DOWN');
            break;
        default:
    }
+}
+
+function placeNewFood() {
+  var tile;
+  do {
+    var randomx = Math.floor(Math.random()*NUMBEROFCOLLUMNS);
+    var randomy = Math.floor(Math.random()*NUMBEROFROWS);
+    tile = ({x:randomx, y:randomy});
+  } while (isPartOfSnake(tile));
+  setTileAsFood(tile);
+}
+
+function isFood(tile){
+  return (getDivForTile(tile).className == "food-tile");
+}
+
+function isPartOfSnake(tile){
+  return (getDivForTile(tile).className == "occupied-tile");
 }
