@@ -1,24 +1,40 @@
 var occupiedTiles = [];
 var currentDirection = "";
-
+var NUMBEROFROWS = 20;
+var NUMBEROFCOLLUMNS = 20;
 initialize();
 setInterval(function () {
-  update();
+   update();
 }, 100);
 
 function initialize() {
-  setTileAsOccupied(40);
-  occupiedTiles.push(40);
+  createMap();
+  var initialTile = {x:0, y:0};
+  occupiedTiles.push(initialTile);
+  setTileAsOccupied(initialTile);
   setDirection('RIGHT');
   document.onkeydown = checkKey;
 }
 
-function setTileAsOccupied(tileId){
-  document.getElementById(tileId.toString()).className = "occupied-tile";
+function createMap() {
+  for (var i = 0; i < NUMBEROFROWS; i++) {
+    for (var j = 0; j < NUMBEROFCOLLUMNS; j++) {
+      var newDiv = document.createElement("div");
+      newDiv.className = "clear-tile"
+      newDiv.id = (j.toString() + ',' + i.toString());
+      document.body.appendChild(newDiv);
+    }
+    var newBr = document.createElement("br");
+    document.body.appendChild(newBr);
+  }
 }
 
-function setTileAsClear(tileId){
-  document.getElementById(tileId.toString()).className = "clear-tile";
+function setTileAsOccupied(tile){
+  document.getElementById(tile.x.toString() + ',' + tile.y.toString()).className = "occupied-tile";
+}
+
+function setTileAsClear(tile){
+  document.getElementById(tile.x.toString() + ',' + tile.y.toString()).className = "clear-tile";
 }
 
 function setDirection(direction){
@@ -26,51 +42,51 @@ function setDirection(direction){
 }
 
 function update(){
-  var nextTileId = getNextTileId();
-  occupiedTiles.push(nextTileId);
-  console.log(nextTileId);
-  setTileAsOccupied(nextTileId);
-  var tailId = occupiedTiles.shift();
-  setTileAsClear(tailId);
+  var nextTile = getNextTile();
+  occupiedTiles.push(nextTile);
+  setTileAsOccupied(nextTile);
+  var tailTile = occupiedTiles.shift();
+  setTileAsClear(tailTile);
 }
 
-function getNextTileId(){
-  var headId = occupiedTiles[occupiedTiles.length - 1];
-  console.log(headId);
+function getNextTile(){
+  var headTile = occupiedTiles[occupiedTiles.length - 1];
   switch (currentDirection) {
     case 'RIGHT':
-      if(headId % 10 == 9){
-        nextId = headId - 9;
+      if(headTile.x == NUMBEROFCOLLUMNS - 1){
+        var next = {x:0, y:headTile.y};
       } else {
-        nextId = headId + 1;
+        var next = {x:headTile.x+1, y:headTile.y};
       }
       break;
     case 'LEFT':
-      if(headId % 10 == 0){
-        nextId = headId + 9;
+      if(headTile.x == 0){
+        var next = {x:NUMBEROFCOLLUMNS - 1, y:headTile.y};
       } else {
-        nextId = headId - 1;
+        var next = {x:headTile.x - 1, y:headTile.y};
       }
       break;
+
     case 'UP':
-      if(Math.floor(headId / 10) == 0){
-        nextId = headId + 90;
+      if(headTile.y == 0){
+        var next = {x:headTile.x, y:NUMBEROFROWS - 1};
       } else {
-        nextId = headId - 10;
+        var next = {x:headTile.x, y:headTile.y - 1};
       }
       break;
+
     case 'DOWN':
-      if(Math.floor(headId / 10) == 9){
-        nextId = headId - 90;
+      if(headTile.y == NUMBEROFROWS - 1){
+        var next = {x:headTile.x, y:0};
       } else {
-        nextId = headId + 10;
+        var next = {x:headTile.x, y:headTile.y + 1};
       }
       break;
 
     default:
 
   }
-  return nextId;
+  return next;
 }
 
 function checkKey(e) {
