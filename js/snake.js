@@ -6,23 +6,11 @@ var currentDirection = "";
 var NUMBEROFROWS = 20;
 var NUMBEROFCOLLUMNS = 20;
 var currentState = "RUNNING"
+var gameLoopId;
+var currentGameLoopInterval = 100;
 
 initialize();
-setInterval(function () {
-  switch (currentState) {
-    case "RUNNING":
-      update();
-      break;
-    case "PAUSED":
-      break;
-    case "GAMEOVER":
-      finishGame();
-      break;
-    default:
-
-  }
-
-}, 100);
+setGameLoop(currentGameLoopInterval);
 
 function initialize() {
   createMap();
@@ -32,6 +20,23 @@ function initialize() {
   setNextDirection('RIGHT');
   document.onkeydown = checkKey;
   placeNewFood();
+}
+
+function setGameLoop(interval) {
+  if(gameLoopId) clearInterval(gameLoopId);
+  gameLoopId = setInterval(function () {
+    switch (currentState) {
+      case "RUNNING":
+        update();
+        break;
+      case "PAUSED":
+        break;
+      case "GAMEOVER":
+        finishGame();
+        break;
+      default:
+    }
+  }, interval);
 }
 
 function createMap() {
@@ -82,6 +87,7 @@ function update(){
   } else{
     if(isFood(nextTile)){
       placeNewFood();
+      increaseSpeed();
     } else {
       var tailTile = occupiedTiles.shift();
       setTileAsClear(tailTile);
@@ -184,4 +190,9 @@ function finishGame(){
       setTileAsGameOver(tile);
     }
   }
+}
+
+function increaseSpeed(){
+  currentGameLoopInterval = 0.95*currentGameLoopInterval;
+  setGameLoop(currentGameLoopInterval);
 }
