@@ -1,18 +1,19 @@
 var occupiedTiles = [];
+var nextDirection = "";
 var currentDirection = "";
 var NUMBEROFROWS = 20;
 var NUMBEROFCOLLUMNS = 20;
 initialize();
 setInterval(function () {
    update();
-}, 100);
+}, 300);
 
 function initialize() {
   createMap();
   var initialTile = {x:0, y:0};
   occupiedTiles.push(initialTile);
   setTileAsOccupied(initialTile);
-  setDirection('RIGHT');
+  setNextDirection('RIGHT');
   document.onkeydown = checkKey;
 }
 
@@ -37,11 +38,12 @@ function setTileAsClear(tile){
   document.getElementById(tile.x.toString() + ',' + tile.y.toString()).className = "clear-tile";
 }
 
-function setDirection(direction){
-  currentDirection = direction;
+function setNextDirection(direction){
+  nextDirection = direction;
 }
 
 function update(){
+  currentDirection = nextDirection;
   var nextTile = getNextTile();
   occupiedTiles.push(nextTile);
   setTileAsOccupied(nextTile);
@@ -93,19 +95,19 @@ function checkKey(e) {
   switch (e.keyCode) {
        //Left
        case 37:
-           if(currentDirection != 'RIGHT') setDirection('LEFT');
+           if(currentDirection != 'RIGHT') setNextDirection('LEFT');
            break;
       //Up
        case 38:
-           if(currentDirection != 'DOWN') setDirection('UP');
+           if(currentDirection != 'DOWN') setNextDirection('UP');
            break;
       //Right
        case 39:
-           if(currentDirection != 'LEFT') setDirection('RIGHT');
+           if(currentDirection != 'LEFT') setNextDirection('RIGHT');
            break;
        //Down
        case 40:
-           if(currentDirection != 'UP') setDirection('DOWN');
+           if(currentDirection != 'UP') setNextDirection('DOWN');
            break;
        default:
    }
