@@ -5,19 +5,38 @@ var nextDirection = "";
 var currentDirection = "";
 var NUMBEROFROWS = 20;
 var NUMBEROFCOLLUMNS = 20;
+var currentState = "RUNNING"
+var gameLoopId;
+var currentGameLoopInterval = 100;
+
 initialize();
-placeNewFood();
-setInterval(function () {
-   update();
-}, 100);
+setGameLoop(currentGameLoopInterval);
 
 function initialize() {
   createMap();
   var initialTile = {x:0, y:0};
   setTileAsOccupied(initialTile);
-  setTileAsOccupied({x:1, y:0});
+  setTileAsOccupied({x:initialTile.x + 1, y:initialTile.y}); //Added for initial snake size to be 2 tiles
   setNextDirection('RIGHT');
   document.onkeydown = checkKey;
+  placeNewFood();
+}
+
+function setGameLoop(interval) {
+  if(gameLoopId) clearInterval(gameLoopId);
+  gameLoopId = setInterval(function () {
+    switch (currentState) {
+      case "RUNNING":
+        update();
+        break;
+      case "PAUSED":
+        break;
+      case "GAMEOVER":
+        finishGame();
+        break;
+      default:
+    }
+  }, interval);
 }
 
 function createMap() {
@@ -28,10 +47,10 @@ function createMap() {
       newDiv.className = "clear-tile"
       newDiv.id = (j.toString() + ',' + i.toString());
       mapTiles[i].push(newDiv);
-      document.body.appendChild(newDiv);
+      document.getElementById("gameboard").appendChild(newDiv);
     }
     var newBr = document.createElement("br");
-    document.body.appendChild(newBr);
+    document.getElementById("gameboard").appendChild(newBr);
   }
 }
 
@@ -52,6 +71,10 @@ function setTileAsFood(tile){
   getDivForTile(tile).className = "food-tile";
 }
 
+function setTileAsGameOver(tile){
+  getDivForTile(tile).className = "game-over-tile";
+}
+
 function setNextDirection(direction){
   nextDirection = direction;
 }
@@ -60,10 +83,11 @@ function update(){
   currentDirection = nextDirection;
   var nextTile = getNextTile();
   if(isPartOfSnake(nextTile)){
-    console.log('Game Over');
+    currentState = "GAMEOVER"
   } else{
     if(isFood(nextTile)){
       placeNewFood();
+      increaseSpeed();
     } else {
       var tailTile = occupiedTiles.shift();
       setTileAsClear(tailTile);
@@ -130,6 +154,15 @@ function checkKey(e) {
        case 40:
            if(currentDirection != 'UP') setNextDirection('DOWN');
            break;
+      //Space
+       case 32:
+           if(currentState == 'RUNNING'){
+             currentState = 'PAUSED'
+             document.getElementById("pause-screen").style.visibility = "visible";
+           } else if (currentState == 'PAUSED') {
+              currentState = 'RUNNING'
+              document.getElementById("pause-screen").style.visibility = "hidden";
+           }
        default:
    }
 }
@@ -150,4 +183,18 @@ function isFood(tile){
 
 function isPartOfSnake(tile){
   return (getDivForTile(tile).className == "occupied-tile");
+}
+
+function finishGame(){
+  for (var i = 0; i < NUMBEROFROWS; i++) {
+    for (var j = 0; j < NUMBEROFCOLLUMNS; j++) {
+      var tile = {x:j, y:i};
+      setTileAsGameOver(tile);
+    }
+  }
+}
+
+function increaseSpeed(){
+  currentGameLoopInterval = 0.95*currentGameLoopInterval;
+  setGameLoop(currentGameLoopInterval);
 }
