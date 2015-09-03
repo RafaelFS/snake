@@ -4,21 +4,21 @@ var currentDirection = "";
 initialize();
 setInterval(function () {
   update();
-}, 500);
+}, 100);
 
 function initialize() {
-  setTileAsOccupied('40');
-  occupiedTiles.push('40');
-  setDirection('Left');
+  setTileAsOccupied(40);
+  occupiedTiles.push(40);
+  setDirection('RIGHT');
+  document.onkeydown = checkKey;
 }
 
 function setTileAsOccupied(tileId){
-  console.log(tileId);
-  document.getElementById(tileId).className = "occupied-tile";
+  document.getElementById(tileId.toString()).className = "occupied-tile";
 }
 
 function setTileAsClear(tileId){
-  document.getElementById(tileId).className = "clear-tile";
+  document.getElementById(tileId.toString()).className = "clear-tile";
 }
 
 function setDirection(direction){
@@ -28,8 +28,8 @@ function setDirection(direction){
 function update(){
   var nextTileId = getNextTileId();
   occupiedTiles.push(nextTileId);
-  setTileAsOccupied(nextTileId);
   console.log(nextTileId);
+  setTileAsOccupied(nextTileId);
   var tailId = occupiedTiles.shift();
   setTileAsClear(tailId);
 }
@@ -37,5 +37,60 @@ function update(){
 function getNextTileId(){
   var headId = occupiedTiles[occupiedTiles.length - 1];
   console.log(headId);
-  return (Number(headId) + 1).toString();
+  switch (currentDirection) {
+    case 'RIGHT':
+      if(headId % 10 == 9){
+        nextId = headId - 9;
+      } else {
+        nextId = headId + 1;
+      }
+      break;
+    case 'LEFT':
+      if(headId % 10 == 0){
+        nextId = headId + 9;
+      } else {
+        nextId = headId - 1;
+      }
+      break;
+    case 'UP':
+      if(Math.floor(headId / 10) == 0){
+        nextId = headId + 90;
+      } else {
+        nextId = headId - 10;
+      }
+      break;
+    case 'DOWN':
+      if(Math.floor(headId / 10) == 9){
+        nextId = headId - 90;
+      } else {
+        nextId = headId + 10;
+      }
+      break;
+
+    default:
+
+  }
+  return nextId;
+}
+
+function checkKey(e) {
+  switch (e.keyCode) {
+       //Left
+       case 37:
+           if(currentDirection != 'RIGHT') setDirection('LEFT');
+           break;
+      //Up
+       case 38:
+           if(currentDirection != 'DOWN') setDirection('UP');
+           break;
+      //Right
+       case 39:
+           if(currentDirection != 'LEFT') setDirection('RIGHT');
+           break;
+       //Down
+       case 40:
+           if(currentDirection != 'UP') setDirection('DOWN');
+           break;
+       default:
+   }
 }
