@@ -47,10 +47,10 @@ function createMap() {
       newDiv.className = "clear-tile"
       newDiv.id = (j.toString() + ',' + i.toString());
       mapTiles[i].push(newDiv);
-      document.body.appendChild(newDiv);
+      document.getElementById("gameboard").appendChild(newDiv);
     }
     var newBr = document.createElement("br");
-    document.body.appendChild(newBr);
+    document.getElementById("gameboard").appendChild(newBr);
   }
 }
 
@@ -158,8 +158,10 @@ function checkKey(e) {
        case 32:
            if(currentState == 'RUNNING'){
              currentState = 'PAUSED'
+             document.getElementById("pause-screen").style.visibility = "visible";
            } else if (currentState == 'PAUSED') {
               currentState = 'RUNNING'
+              document.getElementById("pause-screen").style.visibility = "hidden";
            }
        default:
    }

@@ -1,9 +1,11 @@
-div {
-  width: 30px;
-  height: 30px;
+div{
+  padding: 0;
+  margin: 0;
 }
 
 .clear-tile {
+  width: 30px;
+  height: 30px;
   outline-style: solid;
   outline-width: medium;
   outline-color: #000000;
@@ -11,6 +13,8 @@ div {
 }
 
 .occupied-tile {
+  width: 30px;
+  height: 30px;
   background-color: #000000;
   display: inline-block;
   outline-style: solid;
@@ -20,6 +24,8 @@ div {
 }
 
 .food-tile {
+  width: 30px;
+  height: 30px;
   background-color: #adff2f;
   display: inline-block;
   outline-style: solid;
@@ -29,10 +35,26 @@ div {
 }
 
 .game-over-tile {
+  width: 30px;
+  height: 30px;
   background-color: #ff0000;
   display: inline-block;
   outline-style: solid;
   outline-width: medium;
   outline-color: #000000;
   display: inline-block;
+}
+
+#pause-screen{
+  position: absolute;
+  width: 600px;
+  height: 680px;
+  background-color: rgba(0, 0, 0, 0.8);
+  visibility: hidden;
+}
+
+#pause-screen p{
+  text-align: center;
+  color: #FF0000;
+  font-size: 9em;
 }
