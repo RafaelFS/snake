@@ -5,19 +5,33 @@ var nextDirection = "";
 var currentDirection = "";
 var NUMBEROFROWS = 20;
 var NUMBEROFCOLLUMNS = 20;
+var currentState = "RUNNING"
+
 initialize();
-placeNewFood();
 setInterval(function () {
-   update();
+  switch (currentState) {
+    case "RUNNING":
+      update();
+      break;
+    case "PAUSED":
+      break;
+    case "GAMEOVER":
+      finishGame();
+      break;
+    default:
+
+  }
+
 }, 100);
 
 function initialize() {
   createMap();
   var initialTile = {x:0, y:0};
   setTileAsOccupied(initialTile);
-  setTileAsOccupied({x:1, y:0});
+  setTileAsOccupied({x:initialTile.x + 1, y:initialTile.y}); //Added for initial snake size to be 2 tiles
   setNextDirection('RIGHT');
   document.onkeydown = checkKey;
+  placeNewFood();
 }
 
 function createMap() {
@@ -52,6 +66,10 @@ function setTileAsFood(tile){
   getDivForTile(tile).className = "food-tile";
 }
 
+function setTileAsGameOver(tile){
+  getDivForTile(tile).className = "game-over-tile";
+}
+
 function setNextDirection(direction){
   nextDirection = direction;
 }
@@ -60,7 +78,7 @@ function update(){
   currentDirection = nextDirection;
   var nextTile = getNextTile();
   if(isPartOfSnake(nextTile)){
-    console.log('Game Over');
+    currentState = "GAMEOVER"
   } else{
     if(isFood(nextTile)){
       placeNewFood();
@@ -130,6 +148,13 @@ function checkKey(e) {
        case 40:
            if(currentDirection != 'UP') setNextDirection('DOWN');
            break;
+      //Space
+       case 32:
+           if(currentState == 'RUNNING'){
+             currentState = 'PAUSED'
+           } else if (currentState == 'PAUSED') {
+              currentState = 'RUNNING'
+           }
        default:
    }
 }
@@ -150,4 +175,13 @@ function isFood(tile){
 
 function isPartOfSnake(tile){
   return (getDivForTile(tile).className == "occupied-tile");
+}
+
+function finishGame(){
+  for (var i = 0; i < NUMBEROFROWS; i++) {
+    for (var j = 0; j < NUMBEROFCOLLUMNS; j++) {
+      var tile = {x:j, y:i};
+      setTileAsGameOver(tile);
+    }
+  }
 }
