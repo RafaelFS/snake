@@ -1,0 +1,20 @@
+div {
+  width: 30px;
+  height: 30px;
+}
+
+.clear-tile {
+  outline-style: solid;
+  outline-width: medium;
+  outline-color: #000000;
+  display: inline-block;
+}
+
+.occupied-tile {
+  background-color: #000000;
+  display: inline-block;
+  outline-style: solid;
+  outline-width: medium;
+  outline-color: #000000;
+  display: inline-block;
+}
